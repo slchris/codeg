@@ -8,6 +8,7 @@
 
 pub mod activity;
 pub mod backup;
+pub mod channel_media;
 pub mod download;
 pub mod exec;
 pub mod file_ticket;

@@ -569,7 +569,7 @@ pub struct UploadAttachmentResult {
 /// Strategy: keep only the final path component, strip shell-hostile and
 /// cross-platform-hostile characters, and bound the length. Leading dots are
 /// preserved for real dotfiles, but all-dot names fall back to `file`.
-fn sanitize_upload_filename(raw: &str) -> String {
+pub(crate) fn sanitize_upload_filename(raw: &str) -> String {
     let base = raw
         .rsplit(['/', '\\'])
         .next()
@@ -684,7 +684,7 @@ async fn finalize_with_available_upload_name(
 /// distinct sessions whose ids degenerate to an empty string. Only allow
 /// `[A-Za-z0-9_-]`; everything else collapses to `_`. Empty input falls back
 /// to `"anon"`.
-fn sanitize_session_bucket(raw: &str) -> String {
+pub(crate) fn sanitize_session_bucket(raw: &str) -> String {
     let cleaned: String = raw
         .chars()
         .map(|c| match c {
@@ -704,7 +704,7 @@ fn sanitize_session_bucket(raw: &str) -> String {
 
 /// Confirm `candidate` resolves (after symlink expansion) inside `root`.
 /// Returns the canonical path on success. Both paths must exist on disk.
-async fn ensure_path_inside(
+pub(crate) async fn ensure_path_inside(
     candidate: &std::path::Path,
     root: &std::path::Path,
 ) -> Result<std::path::PathBuf, AppCommandError> {

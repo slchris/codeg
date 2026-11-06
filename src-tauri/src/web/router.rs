@@ -1765,6 +1765,14 @@ pub fn build_router(
         // 不采 CPU、不读磁盘,与 metrics 分开正是为了别为一个计数做那些系统调用。
         .route("/myclaw/activity", get(handlers::myclaw::activity::activity))
         .route("/myclaw/task", post(handlers::myclaw::task::submit))
+        // 渠道附件导入(Telegram / WhatsApp)。路径是**扁平**的
+        // `/api/import_channel_attachment` —— 平台侧用 callCodeg("import_channel_attachment")
+        // 拼 `/api/<name>`,方法名是双方契约,所以不随 `/myclaw/*` 前缀走。
+        // 见 handlers/myclaw/channel_media.rs。
+        .route(
+            "/import_channel_attachment",
+            post(handlers::myclaw::channel_media::import_channel_attachment),
+        )
         // 整个家目录备份到平台给的预签名地址(异步:POST 开始、GET 查状态、cancel 取消;
         // 见 handlers/myclaw/backup.rs)。备份期间 activity 报 maintenance=backup。
         .route(
@@ -1987,7 +1995,7 @@ async fn health_check() -> impl IntoResponse {
         "status": "ok",
         "version": env!("CARGO_PKG_VERSION"),
         // Protocol support does not claim that third-party accounts are enabled.
-        "capabilities": ["whatsapp_relay_proxy_v2", "whatsapp_relay_endpoint_v1", "whatsapp_relay_presentation_v1", "whatsapp_question_reply_v1", "internal_prompt_inline_v1", "native_steering_v1", "hermes_reasoning_snapshot_v1", "automation_reasoning_v1", "native_port_preview_v1"],
+        "capabilities": ["whatsapp_relay_proxy_v2", "whatsapp_relay_endpoint_v1", "whatsapp_relay_presentation_v1", "whatsapp_question_reply_v1", "internal_prompt_inline_v1", "native_steering_v1", "hermes_reasoning_snapshot_v1", "automation_reasoning_v1", "native_port_preview_v1", "channel_media_import_v1"],
 
     }))
 }
